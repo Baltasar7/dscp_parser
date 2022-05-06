@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define DEBUG_PRINT
+//#define DEBUG_PRINT
 
 #define BUFF_SIZE 8
 
@@ -14,7 +14,9 @@
  */
 int main(int argc, char* argv[]) {
     while(true) {
-        puts("\nEnter a IPv4 header TOS field value (two char hexadecimal).  example) 0x0f");
+        puts("\nEnter a IPv4 header TOS field value (two char hexadecimal).");
+        puts("example) 0x0f");
+        printf("input: ");
         
         /*
          *  Get User input TOS field value to buffer.
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]) {
          *  Flush stdin.
          */
         if(strlen(input_tos_buffer) == (BUFF_SIZE - 1) && input_tos_buffer[6] != '\n') {
+            puts("Info: Flush strings that over the buffer size.");
             while(getchar() != '\n');
         }
         
@@ -59,17 +62,34 @@ int main(int argc, char* argv[]) {
         char* endptr = NULL;
         unsigned long tos_field_val = strtoul(input_tos_buffer, &endptr, 16);
         if(errno != 0 || *endptr != '\0') {
-            printf("Error: stdtoul() is Failure...\n");
+            puts("Error: stdtoul() is Failure. Input text invalid.");
             continue;
         }
 
         /*
          *  Print DSCP decimal and bit.
+         *
+         *  Reference: RFC2474 Section.3  IPv4 Header TOS field(octet)
+         *    0   1   2   3   4   5   6   7
+         *  +---+---+---+---+---+---+---+---+
+         *  |         DSCP          |  CU   |
+         *  +---+---+---+---+---+---+---+---+
+         *  DSCP: differentiated services codepoint
+         *  CU:   currently unused
          */
+        puts("output:");
+        
         unsigned char dscp = (unsigned char)tos_field_val >> 2;
-        printf("DSCP (decimal) : %d\n", dscp);
-        printf("Priority       : %d\n", dscp & 0x07); // DSCP 0-2bit
-        printf("Drop precedence: %d\n", dscp & 0x28); // DSCP 3-5bit
+        printf("                 decimal  hex\n");
+        printf("DSCP           : %2d       0x%02x\n", dscp, dscp);
+        
+        unsigned char priority = dscp & 0x07;               // DSCP 0-2bit
+        unsigned char drop_precedence = (dscp & 0x38) >> 3; // DSCP 3-5bit
+        printf("                 decimal  bit\n");
+        printf("Priority       : %d        %d%d%d\n", priority,
+            (priority & 0x04) >> 2, (priority & 0x02) >> 1, priority & 0x01);
+        printf("Drop precedence: %d        %d%d%d\n",drop_precedence,
+            (drop_precedence & 0x04) >> 2, (drop_precedence & 0x02) >> 1, drop_precedence & 0x01);
     }
 
     return 0;
