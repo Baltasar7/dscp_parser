@@ -79,17 +79,19 @@ int main(int argc, char* argv[]) {
          */
         puts("output:");
         
-        unsigned char dscp = (unsigned char)tos_field_val >> 2;
+        // ================ Edit and testing section ================ //
+        unsigned char dscp = (unsigned char)tos_field_val;
         printf("                 decimal  hex\n");
         printf("DSCP           : %2d       0x%02x\n", dscp, dscp);
         
-        unsigned char priority = dscp & 0x07;               // DSCP 0-2bit
-        unsigned char drop_precedence = (dscp & 0x38) >> 3; // DSCP 3-5bit
+        unsigned char priority = ;        // DSCP 0-2bit
+        unsigned char drop_precedence = ; // DSCP 3-5bit
         printf("                 decimal  bit\n");
         printf("Priority       : %d        %d%d%d\n", priority,
-            (priority & 0x04) >> 2, (priority & 0x02) >> 1, priority & 0x01);
+            (priority) , (priority) , priority);
         printf("Drop precedence: %d        %d%d%d\n",drop_precedence,
-            (drop_precedence & 0x04) >> 2, (drop_precedence & 0x02) >> 1, drop_precedence & 0x01);
+            (drop_precedence), (drop_precedence), drop_precedence);
+        // ================ Edit and testing section END ================ //
     }
 
     return 0;
