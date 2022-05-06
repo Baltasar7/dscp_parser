@@ -1,0 +1,1 @@
+gcc -o dscp_parser main.c
